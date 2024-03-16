@@ -1,31 +1,58 @@
-# Regions + RC Experiment
+## Regions + RC Benchmarks
 
-This is a sample regions-enabled Vale program, plus a few scripts to compile it using Vale's super-secret reference-counting mode, to see how much [immutable region borrowing](https://verdagon.dev/blog/zero-cost-borrowing-regions-part-1-immutable-borrowing) can benefit reference counting approaches.
+This is a sample regions-enabled Vale program, plus a few scripts to compile it with a super-secret reference-counting valec mode, to see how much [immutable region borrowing](https://verdagon.dev/blog/zero-cost-borrowing-regions-part-1-immutable-borrowing) can benefit reference counting approaches.
+
+TL;DR: For this sample program, regions remove 73% of reference counting increments/decrements in a program run, reducing reference counting's run-time overhead by 66%.
+
+Bonus finding: Since regions are an alternative way to prevent the data races that atomic refcounting prevents, I compared the two: regions remove 97% of atomic RC's overhead.
+
+## Background
 
 Normally, Vale uses [generational references](https://verdagon.dev/blog/generational-references) for its memory safety, and is designed to use regions to eliminate their overhead. The [prototype](https://verdagon.dev/blog/first-regions-prototype) showed us that with the right coding technique (linear style) we can even reduce generation checks down to zero.
 
-A fascinating fact about regions: they don't just help generational references, they would help reference counting too! But we didn't know how much.
-
-Vale will always use generational references, but I figured it would be easy to make a reference-counting backend and measure how much regions help, for those making reference-counted languages, considering whether to add regions or not.
+However, regions don't just help generational references, they help reference counting too! I figured it would be easy to make a reference-counting backend and measure how much regions help, to help reference-counted language authors to see the benefits of regions.
 
 So, I added a secret reference-counting mode, enabled with `--region_override naive-rc`. We can also use `--elide_checks_for_regions false` to turn off regions.
 
-# The Program
+## The Program
 
 This repository contains only one program; the below results only reflect how regions affect this one program. Results would be different for different programs, and also depend on how the coder decides to structure their program.
 
 This program is a "cellular automata" level generation algorithm for a roguelike game. Example output of a smaller level (the actual program produces much larger ones for benchmarking):
 
+```
+......................#####.....................................................
+................###..########....########....######.######.......##.............
+........#......####...###.###...##########..#########.#####.....####............
+..###.####.....####...##...###.####################....####....#########........
+.#########....#####...##....########...#########.......#####..###########.......
+..##########...###...####...#####...#...###............##################.......
+...#########...###...####...##########.................###################......
+...##########..........##..#############...............######..#.#########...##.
+....############..........##################...........######......#######...##.
+....###########.....#.....###.##################......#######......#######...##.
+....###########....###....##...##################......######.......######...###
+..#######.###.....#####...###..###.######.######......#######........######...##
+.########.###.....#####...###.......####...............#######.......#...###.###
+..######..........##########.........###..............####.###...........#######
+...#####..........####.###...........................####..###.##...###..#######
+....###...##.......#...##.........................#.######.###.#...#############
+..#####.#####...............................#....###############...#############
+..##########................................###.###############...#########...#.
+...##..####.................................##..##############.....#######......
+........##.......................................##....#####....................
+```
 
+Cellular automata maps such as these are often used in [roguelike games](https://verdagon.itch.io/vale-prototype).
 
-# Results
+## Results
 
 For this program, `count-rc.sh` reports:
 
  * 358287712 RC increments/decrements without regions.
  * 96027012 RC increments/decrements with regions.
 
-In other words, *regions eliminate 73% of RC increments/decrements.*
+In other words, **regions eliminate 73% of RC increments/decrements.**
 
 And `benchmark-run.sh` reports:
 
@@ -40,11 +67,11 @@ The relevant numbers are:
  * Compared to no memory safety (148.0ms), nonatomic reference counting (216.5ms) adds 68.5ms overhead.
  * Compared to no memory safety (148.0ms), nonatomic reference counting with regions (171.4ms) adds 23.4ms overhead.
 
-In other words, regions bring reference counting overhead down from 68.5ms to 23.4ms, which is a *66% reduction in reference counting overhead*.
+In other words, regions bring reference counting overhead down from 68.5ms to 23.4ms, which is a **66% reduction in reference counting overhead**.
 
-I also included atomic RC for fun. Nonatomic and regions removes 97% (!) of the overhead compared to atomic RC. I should also mention that regions also prevent the data races that atomicity is introduced to fix.
+I also included atomic RC for fun. Nonatomic and regions removes 97% (!) of the overhead compared to atomic RC.
 
-# Reproducing
+## Reproducing
 
  * Clone my personal Vale fork's [regions branch](https://github.com/Verdagon/Vale/tree/regions).
  * Build the compiler. This might be tricky depending on your machine, I recommend using Ubuntu.
