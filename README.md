@@ -49,8 +49,8 @@ Cellular automata maps such as these are often used in [roguelike games](https:/
 
 For this program, `count-rc.sh` reports:
 
- * 358287712 RC increments/decrements without regions.
- * 96027012 RC increments/decrements with regions.
+ * `358287712` RC increments/decrements without regions.
+ * `96027012` RC increments/decrements with regions.
 
 In other words, **regions eliminate 73% of RC increments/decrements.**
 
@@ -83,4 +83,4 @@ I also included atomic RC for fun. Nonatomic and regions removes 97% (!) of the 
  * Run `benchmark-build.sh`, for example on an M2 mac `./benchmark-build.sh /Volumes/V/Vale/release-mac/valec ~/clang+llvm-16.0.4-arm64-apple-darwin22.0/bin/clang /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr` The arguments are the same as count-rc.sh.
  * Run `./benchmark-run.sh`, or if you're on linux, run it inside a cset shield.
 
-If you have trouble with these steps, **please do not open a GitHub issue on the Verdagon/Vale repo,** I often ignore those for weeks for my own mental health and sanity. [Emailing me](verdagon_epsa@verdagon.dev) or messaging me on Discord (Verdagon) is often more successful.
+If you have trouble with these steps, **please do not open a GitHub issue on the Verdagon/Vale repo,** I often ignore those for weeks for my own mental health and sanity. [Emailing me](mailto:verdagon_epsa@verdagon.dev) or messaging me on Discord (Verdagon) is often more successful.
